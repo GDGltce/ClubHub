@@ -1,7 +1,6 @@
 # ClubHub 🎓
 
-> **College Club Management Platform** — Base project for the Open Source Contribution Workshop (9–10 October 2026)
-> Prepared by: Google Developer Group & Technical Vidya
+Google Developer Groups on Campus LTCE
 
 ---
 
