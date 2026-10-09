@@ -11,8 +11,23 @@ import ClubDetailPage from '../pages/clubs/ClubDetailPage';
 import EventListPage from '../pages/events/EventListPage';
 import EventDetailPage from '../pages/events/EventDetailPage';
 import EventCreatePage from '../pages/events/EventCreatePage';
+import ClubCreatePage from '../pages/clubs/ClubCreatePage';
 
 // Simple Auth Guard
+function Placeholder({ kicker, title, text }) {
+  return (
+    <AppLayout>
+      <p className="page-kicker">{kicker}</p>
+      <div className="page-header">
+        <div>
+          <h1 className="page-title">{title}</h1>
+          <p className="page-subtitle">{text}</p>
+        </div>
+      </div>
+    </AppLayout>
+  );
+}
+
 const RequireAuth = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <AppLayout><div className="page-loader"><div className="spinner"/></div></AppLayout>;
@@ -43,6 +58,10 @@ const router = createBrowserRouter([
     element: <ClubDirectoryPage />,
   },
   {
+    path: '/clubs/new',
+    element: <RequireAuth><ClubCreatePage /></RequireAuth>,
+  },
+  {
     path: '/clubs/:id',
     element: <ClubDetailPage />,
   },
@@ -62,23 +81,23 @@ const router = createBrowserRouter([
   // Fallback routes for undeveloped pages
   {
     path: '/meetings',
-    element: <AppLayout><div className="empty-state"><h3>Meetings Module</h3><p>Coming soon...</p></div></AppLayout>,
+    element: <Placeholder kicker="Club" title="Meetings" text="Minutes and agendas will live here. The API exists; the page is still being built." />,
   },
   {
     path: '/documents',
-    element: <AppLayout><div className="empty-state"><h3>Document Vault</h3><p>Coming soon...</p></div></AppLayout>,
+    element: <Placeholder kicker="Club" title="Document vault" text="Proposals, budgets, and approvals will be filed here." />,
   },
   {
     path: '/admin/institutions',
-    element: <AppLayout><div className="empty-state"><h3>Admin: Institutions</h3><p>Coming soon...</p></div></AppLayout>,
+    element: <Placeholder kicker="Admin" title="Institutions" text="College and department registration is not in the interface yet." />,
   },
   {
     path: '/admin/users',
-    element: <AppLayout><div className="empty-state"><h3>Admin: Users</h3><p>Coming soon...</p></div></AppLayout>,
+    element: <Placeholder kicker="Admin" title="Users" text="Account review for the campus will be added here." />,
   },
   {
     path: '*',
-    element: <AppLayout><div className="empty-state"><h2>404</h2><p>Page not found</p></div></AppLayout>,
+    element: <Placeholder kicker="404" title="Page not found" text="That address is not part of ClubHub." />,
   },
 ]);
 

@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # Database
-    DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/clubhub"
+    DATABASE_URL: str = "sqlite:///./clubhub.db"
 
     # Auth
     SECRET_KEY: str = "dev-secret-key-change-in-production-min-32-chars"

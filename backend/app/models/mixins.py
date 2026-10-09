@@ -3,9 +3,28 @@ Shared mixin for all models: primary key, timestamps.
 """
 import uuid
 from datetime import datetime
-from sqlalchemy import DateTime, func
+from sqlalchemy import DateTime, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.types import TypeDecorator
+
+
+class UUID(TypeDecorator):
+    """UUID that accepts strings from JWTs and URL params on SQLite."""
+
+    impl = Uuid
+    cache_ok = True
+
+    def __init__(self, as_uuid: bool = True):
+        super().__init__()
+        self._as_uuid = as_uuid
+
+    def load_dialect_impl(self, dialect):
+        return dialect.type_descriptor(Uuid(as_uuid=self._as_uuid))
+
+    def process_bind_param(self, value, dialect):
+        if value is None or isinstance(value, uuid.UUID):
+            return value
+        return uuid.UUID(str(value))
 
 
 class UUIDMixin:

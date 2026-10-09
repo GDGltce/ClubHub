@@ -6,9 +6,8 @@ from typing import Optional, List, TYPE_CHECKING
 from datetime import date
 from sqlalchemy import String, Text, Boolean, ForeignKey, Date, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 from app.db.session import Base
-from app.models.mixins import UUIDMixin, TimestampMixin
+from app.models.mixins import UUID, UUIDMixin, TimestampMixin
 import enum
 
 if TYPE_CHECKING:

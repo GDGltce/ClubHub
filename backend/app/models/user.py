@@ -5,9 +5,8 @@ import uuid
 from typing import Optional, List, TYPE_CHECKING
 from sqlalchemy import String, Boolean, ForeignKey, Enum as SAEnum, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 from app.db.session import Base
-from app.models.mixins import UUIDMixin, TimestampMixin
+from app.models.mixins import UUID, UUIDMixin, TimestampMixin
 import enum
 
 if TYPE_CHECKING:
@@ -38,7 +37,9 @@ class User(Base, UUIDMixin, TimestampMixin):
         back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
     memberships: Mapped[List["Membership"]] = relationship(back_populates="user")
-    join_requests: Mapped[List["JoinRequest"]] = relationship(back_populates="user")
+    join_requests: Mapped[List["JoinRequest"]] = relationship(
+        back_populates="user", foreign_keys="JoinRequest.user_id"
+    )
     notifications: Mapped[List["Notification"]] = relationship(back_populates="user")
 
 

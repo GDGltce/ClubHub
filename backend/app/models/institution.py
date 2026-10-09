@@ -5,9 +5,8 @@ import uuid
 from typing import Optional, List, TYPE_CHECKING
 from sqlalchemy import String, Text, Boolean, ForeignKey, Enum as SAEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
 from app.db.session import Base
-from app.models.mixins import UUIDMixin, TimestampMixin
+from app.models.mixins import UUID, UUIDMixin, TimestampMixin
 import enum
 
 if TYPE_CHECKING:

@@ -18,7 +18,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
-    if (err.response?.status === 401 && !err.config._retry) {
+    const path = err.config?.url || '';
+    const isAuthCall = path.includes('/auth/login') || path.includes('/auth/register') || path.includes('/auth/refresh');
+    if (err.response?.status === 401 && !err.config._retry && !isAuthCall) {
       err.config._retry = true;
       try {
         const refresh = localStorage.getItem('refresh_token');

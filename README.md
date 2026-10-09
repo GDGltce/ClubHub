@@ -98,24 +98,23 @@ ClubHub/
 
 ### 1. Backend
 
+SQLite is the default, so a fresh clone runs without Docker or PostgreSQL.
+
 ```bash
 cd backend
-python3 -m venv venv
-source venv/bin/activate       # Windows: venv\Scripts\activate
+python -m venv venv
+# Windows: venv\Scripts\activate
+# macOS/Linux: source venv/bin/activate
 pip install -r requirements.txt
 
-# Copy and fill in your DB url
-cp .env.example .env
+# Windows: copy .env.example .env
+# macOS/Linux: cp .env.example .env
 
-# Run migrations
-alembic upgrade head
-
-# Seed demo data
 python seed.py
-
-# Start server
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --port 8000
 ```
+
+To use PostgreSQL or Supabase instead, set `DATABASE_URL` in `.env` and run `alembic upgrade head` before seeding. Python 3.13 is supported with the pinned requirements.
 
 API docs → http://localhost:8000/docs
 

@@ -1,32 +1,45 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { useState } from 'react';
+import { Mark } from '../common/Icon';
+import Icon from '../common/Icon';
 
-export default function Navbar() {
-  const { user, logout } = useAuth();
+export default function Navbar({ onMenu }) {
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const role = user?.global_role?.replaceAll('_', ' ');
+
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar__logo">🎓 ClubHub</Link>
+      <div className="flex items-center gap-2">
+        <button className="navbar__menu" type="button" aria-label="Open menu" onClick={onMenu}>
+          <Icon name="menu" />
+        </button>
+        <Link to="/dashboard" className="navbar__brand">
+          <Mark size={26} />
+          <span>
+            <span className="navbar__logo">ClubHub</span>
+            <span className="navbar__kicker"> campus record</span>
+          </span>
+        </Link>
+      </div>
       <div className="navbar__actions">
-        {user ? (
+        {loading ? null : user ? (
           <>
-            <span className="text-sm text-muted">{user.full_name}</span>
-            <span className="badge badge--primary" style={{ textTransform: 'capitalize' }}>
-              {user.global_role.replace('_', ' ')}
-            </span>
-            <button className="btn btn--secondary btn--sm" onClick={handleLogout}>Logout</button>
+            <span className="text-sm">{user.full_name}</span>
+            {role && <span className="badge badge--primary">{role}</span>}
+            <button className="btn btn--secondary btn--sm" onClick={handleLogout}>
+              <Icon name="logout" size={15} /> Sign out
+            </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="btn btn--secondary btn--sm">Login</Link>
+            <Link to="/login" className="btn btn--secondary btn--sm">Sign in</Link>
             <Link to="/register" className="btn btn--primary btn--sm">Register</Link>
           </>
         )}

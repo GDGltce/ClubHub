@@ -5,9 +5,8 @@ import uuid
 from typing import Optional
 from sqlalchemy import String, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy.dialects.postgresql import UUID
 from app.db.session import Base
-from app.models.mixins import UUIDMixin, TimestampMixin
+from app.models.mixins import UUID, UUIDMixin, TimestampMixin
 
 
 class ActivityLog(Base, UUIDMixin, TimestampMixin):

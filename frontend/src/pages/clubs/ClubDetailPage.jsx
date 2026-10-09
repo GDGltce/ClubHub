@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import AppLayout from '../../components/layout/AppLayout';
+import Icon from '../../components/common/Icon';
+import { Empty, initials, washFor } from '../../components/common/Marks';
 import { clubApi, membershipApi, eventApi } from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 
-const STAGES = ['idea','permission','funds','planning','promotion','pre_event','execution','post_event','archived'];
+const STAGES = ['idea', 'permission', 'funds', 'planning', 'promotion', 'pre_event', 'execution', 'post_event', 'archived'];
 
 export default function ClubDetailPage() {
   const { id } = useParams();
@@ -14,21 +16,22 @@ export default function ClubDetailPage() {
   const [events, setEvents] = useState([]);
   const [joinNote, setJoinNote] = useState('');
   const [joining, setJoining] = useState(false);
-  const [joinMsg, setJoinMsg] = useState('');
+  const [joinState, setJoinState] = useState(null);
 
   useEffect(() => {
-    clubApi.get(id).then(r => setClub(r.data)).catch(() => navigate('/clubs'));
-    eventApi.list({ club_id: id }).then(r => setEvents(r.data)).catch(() => {});
+    clubApi.get(id).then((r) => setClub(r.data)).catch(() => navigate('/clubs'));
+    eventApi.list({ club_id: id }).then((r) => setEvents(r.data)).catch(() => {});
   }, [id, navigate]);
 
   const handleJoin = async () => {
     if (!user) return navigate('/login');
     setJoining(true);
+    setJoinState(null);
     try {
       await membershipApi.submitJoinRequest({ club_id: id, motivation: joinNote });
-      setJoinMsg('✅ Join request submitted! The club lead will review it.');
+      setJoinState({ ok: true, text: 'Request sent. A club lead will review it.' });
     } catch (err) {
-      setJoinMsg(err?.response?.data?.detail || 'Error submitting request.');
+      setJoinState({ ok: false, text: err?.response?.data?.detail || 'The request could not be sent.' });
     } finally {
       setJoining(false);
     }
@@ -38,112 +41,83 @@ export default function ClubDetailPage() {
 
   return (
     <AppLayout>
-      <div className="animate-fadeUp">
-        {/* Hero Cover */}
-        <div style={{
-          height: 180,
-          borderRadius: 'var(--radius-xl)',
-          marginBottom: '1.5rem',
-          background: `linear-gradient(135deg, hsl(${club.name.charCodeAt(0) * 7 % 360}, 70%, 35%) 0%, hsl(${(club.name.charCodeAt(0) * 7 + 120) % 360}, 70%, 45%) 100%)`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '4rem',
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          🎯
-          <div style={{ position: 'absolute', bottom: '1rem', left: '1.5rem' }}>
-            <h1 style={{ fontSize: '1.75rem', fontFamily: 'var(--font-display)', fontWeight: 800, color: '#fff' }}>{club.name}</h1>
-            <div className="flex gap-1" style={{ marginTop: '0.4rem' }}>
-              <span className="badge badge--success">{club.status}</span>
-              <span className="badge badge--primary">{club.club_type?.replace('_', ' ')}</span>
-              {club.short_name && <span className="badge badge--muted">{club.short_name}</span>}
-            </div>
-          </div>
+      <div className="club-hero" style={{ background: washFor(club.name) }}>
+        <p className="page-kicker" style={{ color: '#f3efe6' }}>{initials(club.name)}</p>
+        <h1>{club.name}</h1>
+        <div className="flex gap-1" style={{ marginTop: '0.55rem' }}>
+          <span className="badge" style={{ color: '#faf7f1', borderColor: 'rgba(250,247,241,0.5)' }}>{club.status}</span>
+          <span className="badge" style={{ color: '#faf7f1', borderColor: 'rgba(250,247,241,0.5)' }}>{club.club_type?.replaceAll('_', ' ')}</span>
+          {club.short_name && <span className="badge" style={{ color: '#faf7f1', borderColor: 'rgba(250,247,241,0.5)' }}>{club.short_name}</span>}
         </div>
+      </div>
 
-        <div className="grid-2">
-          {/* Left: Info */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div className="card">
-              <div className="card__title">About</div>
-              <p className="text-sm text-muted mt-1">{club.description || 'No description provided yet.'}</p>
-              {club.tagline && <p className="text-sm mt-1" style={{ fontStyle: 'italic', color: 'var(--color-brand-secondary)' }}>"{club.tagline}"</p>}
-              {club.instagram_handle && (
-                <a href={`https://instagram.com/${club.instagram_handle}`} target="_blank" rel="noreferrer"
-                  className="btn btn--secondary btn--sm" style={{ marginTop: '1rem', width: 'fit-content' }}>
-                  📸 @{club.instagram_handle}
-                </a>
-              )}
-            </div>
+      {club.status === 'pending' && (
+        <p className="text-sm" style={{ marginBottom: '1rem' }}>
+          This proposal is waiting for an administrator to approve it. It will not appear in the directory until then.
+        </p>
+      )}
 
-            {/* Join request */}
-            {user && user.global_role === 'student' && (
-              <div className="card">
-                <div className="card__title">Request to Join</div>
-                <div className="form-group" style={{ marginTop: '0.75rem' }}>
-                  <label className="form-label">Why do you want to join?</label>
-                  <textarea
-                    className="form-control"
-                    rows={3}
-                    placeholder="Tell us about your motivation..."
-                    value={joinNote}
-                    onChange={e => setJoinNote(e.target.value)}
-                  />
-                </div>
-                {joinMsg ? (
-                  <p className="text-sm" style={{ color: joinMsg.startsWith('✅') ? 'var(--color-success)' : 'var(--color-danger)', marginTop: '0.5rem' }}>{joinMsg}</p>
-                ) : (
-                  <button id={`join-club-${id}`} className="btn btn--primary" style={{ marginTop: '0.75rem' }} onClick={handleJoin} disabled={joining}>
-                    {joining ? <span className="spinner" /> : '🚀 Request to Join'}
-                  </button>
-                )}
-              </div>
+      <div className="grid-2">
+        <div className="stack">
+          <section className="card">
+            <h2 className="card__title">About</h2>
+            <p className="text-sm text-muted mt-1">{club.description || 'No description yet.'}</p>
+            {club.tagline && <p className="text-sm mt-1" style={{ fontFamily: 'var(--font-display)' }}>{club.tagline}</p>}
+            {club.instagram_handle && (
+              <a href={`https://instagram.com/${club.instagram_handle.replace('@', '')}`} target="_blank" rel="noreferrer" className="btn btn--secondary btn--sm" style={{ marginTop: '1rem' }}>
+                <Icon name="instagram" size={15} /> {club.instagram_handle}
+              </a>
             )}
-          </div>
+          </section>
 
-          {/* Right: Events */}
-          <div className="card">
-            <div className="card__header flex justify-between items-center">
-              <div className="card__title">Events</div>
-              {user && (
-                <Link to={`/events/new?club_id=${id}`} className="btn btn--primary btn--sm">+ Event</Link>
-              )}
-            </div>
-            {events.length === 0 ? (
-              <div className="empty-state" style={{ padding: '1.5rem' }}>
-                <div className="empty-state__icon">📅</div>
-                <div className="empty-state__text">No events yet</div>
+          {user && user.global_role === 'student' && club.status === 'active' && (
+            <section className="card">
+              <h2 className="card__title">Request to join</h2>
+              <div className="form-group" style={{ marginTop: '0.75rem' }}>
+                <label className="form-label" htmlFor="join-note">Why do you want to join?</label>
+                <textarea id="join-note" className="form-control" rows={3} placeholder="A short note for the club lead" value={joinNote} onChange={(e) => setJoinNote(e.target.value)} />
               </div>
-            ) : events.map(ev => {
-              const stageIdx = STAGES.indexOf(ev.stage);
-              return (
-                <Link key={ev.id} to={`/events/${ev.id}`} style={{ textDecoration: 'none', display: 'block' }}>
-                  <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '0.5rem', background: 'var(--color-surface-2)', border: '1px solid var(--color-border)' }}>
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm font-bold">{ev.title}</div>
-                      <span className="badge badge--primary">{ev.stage}</span>
-                    </div>
-                    {/* Stage progress mini bar */}
-                    <div style={{ marginTop: '0.5rem', height: 4, background: 'var(--color-border)', borderRadius: 'var(--radius-full)', overflow: 'hidden' }}>
-                      <div style={{
-                        height: '100%',
-                        width: `${((stageIdx + 1) / STAGES.length) * 100}%`,
-                        background: 'var(--gradient-brand)',
-                        borderRadius: 'var(--radius-full)',
-                        transition: 'width 0.4s ease',
-                      }} />
-                    </div>
-                    <div className="text-xs text-muted" style={{ marginTop: '0.25rem' }}>
-                      {stageIdx + 1}/{STAGES.length} stages complete
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+              {joinState ? (
+                <p className={`form-note ${joinState.ok ? 'form-note--ok' : 'form-note--bad'}`}>{joinState.text}</p>
+              ) : (
+                <button id={`join-club-${id}`} className="btn btn--primary" style={{ marginTop: '0.75rem' }} onClick={handleJoin} disabled={joining}>
+                  {joining ? <span className="spinner" /> : 'Send request'}
+                </button>
+              )}
+            </section>
+          )}
+          {!user && (
+            <section className="card">
+              <h2 className="card__title">Join this club</h2>
+              <p className="text-sm text-muted mt-1">Sign in with a student account to send a request.</p>
+              <Link to="/login" className="btn btn--primary" style={{ marginTop: '0.8rem' }}>Sign in</Link>
+            </section>
+          )}
         </div>
+
+        <section className="card">
+          <div className="card__header flex justify-between items-center">
+            <h2 className="card__title">Events</h2>
+            {user && <Link to={`/events/new?club_id=${id}`} className="btn btn--primary btn--sm"><Icon name="plus" size={14} /> Event</Link>}
+          </div>
+          {events.length === 0 ? (
+            <Empty title="No events yet" text="Published events for this club will be listed here." />
+          ) : events.map((ev) => {
+            const stageIdx = Math.max(STAGES.indexOf(ev.stage), 0);
+            return (
+              <Link key={ev.id} to={`/events/${ev.id}`} className="row-link">
+                <div className="list-row" style={{ display: 'block' }}>
+                  <div className="flex justify-between items-center">
+                    <div className="text-sm font-bold">{ev.title}</div>
+                    <span className="badge badge--primary">{ev.stage?.replaceAll('_', ' ')}</span>
+                  </div>
+                  <div className="meter"><span style={{ width: `${((stageIdx + 1) / STAGES.length) * 100}%` }} /></div>
+                  <div className="text-xs text-muted" style={{ marginTop: '0.3rem' }}>{stageIdx + 1} of {STAGES.length} stages</div>
+                </div>
+              </Link>
+            );
+          })}
+        </section>
       </div>
     </AppLayout>
   );

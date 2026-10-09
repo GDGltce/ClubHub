@@ -59,8 +59,8 @@ def seed():
             db.add(club)
 
         db.commit()
-        print("✅ Seed complete.")
-        print("   Admin: admin@clubhub.dev / admin1234")
+        print("Seed complete.")
+        print("Admin: admin@clubhub.dev / admin1234")
     finally:
         db.close()
 

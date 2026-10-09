@@ -55,8 +55,9 @@ export default function EventCreatePage() {
       <div className="animate-fadeUp" style={{ maxWidth: 640, margin: '0 auto' }}>
         <div className="page-header">
           <div>
-            <h1 className="page-title">Create Event</h1>
-            <p className="page-subtitle">Start the event lifecycle</p>
+            <p className="page-kicker">Calendar</p>
+            <h1 className="page-title">Create an event</h1>
+            <p className="page-subtitle">It starts in the idea stage.</p>
           </div>
         </div>
         <div className="card">
@@ -115,8 +116,8 @@ export default function EventCreatePage() {
               </div>
             </div>
             {error && <p className="form-error">{error}</p>}
-            <button id="create-event-submit" className="btn btn--primary btn--lg" type="submit" disabled={loading}>
-              {loading ? <span className="spinner" /> : '🚀 Create Event'}
+            <button id="create-event-submit" className="btn btn--primary" type="submit" disabled={loading}>
+              {loading ? <span className="spinner" /> : 'Create event'}
             </button>
           </form>
         </div>
