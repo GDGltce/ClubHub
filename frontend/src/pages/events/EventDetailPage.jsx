@@ -112,7 +112,7 @@ export default function EventDetailPage() {
 
         <div className="stack">
           {canAdvance && (
-            <section className="card">
+            <section className="card no-print">
               <h2 className="card__title">Advance stage</h2>
               <p className="text-sm text-muted mt-1">Next: {STAGE_LABELS[STAGES[currentIdx + 1]]}</p>
               <div className="form-group" style={{ marginTop: '0.75rem' }}>
