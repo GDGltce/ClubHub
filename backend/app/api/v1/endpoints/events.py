@@ -2,6 +2,8 @@
 Event endpoints with lifecycle stage management
 """
 from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime, date, time, timedelta, timezone
+import uuid
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.db.session import get_db
@@ -16,11 +18,29 @@ STAGE_ORDER = [s for s in EventStatus]
 
 
 @router.get("", response_model=List[EventOut])
-def list_events(club_id: Optional[str] = None, db: Session = Depends(get_db)):
+def list_events(
+    club_id: Optional[str] = None,
+    stage: Optional[EventStatus] = None,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
+    db: Session = Depends(get_db),
+):
     q = db.query(Event).filter(Event.visibility == "public")
     if club_id:
+        try:
+            uuid.UUID(club_id)
+        except ValueError:
+            return []
         q = q.filter(Event.club_id == club_id)
-    return q.all()
+    if stage:
+        q = q.filter(Event.stage == stage)
+    if date_from or date_to:
+        q = q.filter(Event.start_datetime.isnot(None))
+        if date_from:
+            q = q.filter(Event.start_datetime >= datetime.combine(date_from, time.min, tzinfo=timezone.utc))
+        if date_to:
+            q = q.filter(Event.start_datetime < datetime.combine(date_to + timedelta(days=1), time.min, tzinfo=timezone.utc))
+    return q.order_by(Event.start_datetime.is_(None), Event.start_datetime.asc()).all()
 
 
 @router.post("", response_model=EventOut, status_code=201)
