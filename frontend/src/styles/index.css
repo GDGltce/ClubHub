@@ -503,3 +503,27 @@ textarea.form-control { resize: vertical; }
   .page-title { font-size: 1.8rem; }
   .fact-grid { grid-template-columns: 1fr; }
 }
+
+@page { margin: 1.4cm; }
+
+@media print {
+  body { background: #fff; color: #000; }
+
+  .navbar, .sidebar, .sidebar-backdrop,
+  .page-loader, .spinner, button.btn, .no-print { display: none !important; }
+
+  .app-layout { display: block; }
+  .main-content { padding: 0; max-width: none; }
+  .grid-2 { display: block; }
+  .stack { gap: 0.6rem; }
+
+  .card { box-shadow: none; border-color: #999; break-inside: avoid; }
+  .stepper { overflow: visible; }
+
+  a.btn {
+    background: none !important;
+    color: #000 !important;
+    border: 1px solid #999 !important;
+  }
+  a.btn::after { content: " (" attr(href) ")"; font-size: 0.72rem; word-break: break-all; }
+}
