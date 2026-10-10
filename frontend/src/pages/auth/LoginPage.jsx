@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useSearchParams} from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import AuthShell from '../../components/layout/AuthShell';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+const justRegistered = searchParams.get('registered') === '1';
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,6 +31,11 @@ export default function LoginPage() {
   return (
     <AuthShell title="Sign in" subtitle="Use the account issued for your college.">
       <form className="auth-form" onSubmit={handleSubmit}>
+        {justRegistered && (
+  <p className="form-note form-note--ok" role="status">
+    Account created — sign in to continue.
+  </p>
+)}
         <div className="form-group">
           <label className="form-label" htmlFor="login-email">Email</label>
           <input id="login-email" className="form-control" type="email" name="email" placeholder="you@college.edu" value={form.email} onChange={handleChange} required autoComplete="email" />
