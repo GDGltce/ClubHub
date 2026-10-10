@@ -12,7 +12,7 @@ export default function RegisterPage() {
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e) => {
+  /*const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     if (form.password.length < 8) return setError('Use at least 8 characters.');
@@ -27,7 +27,55 @@ export default function RegisterPage() {
     } finally {
       setLoading(false);
     }
-  };
+  };*/
+  
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+
+  const password = form.password;
+
+  // Minimum 8 characters
+  if (password.length < 8) {
+    return setError('Password must be at least 8 characters long.');
+  }
+
+  // At least one uppercase letter
+  if (!/[A-Z]/.test(password)) {
+    return setError('Password must contain at least one uppercase letter (A-Z).');
+  }
+
+  // At least one lowercase letter
+  if (!/[a-z]/.test(password)) {
+    return setError('Password must contain at least one lowercase letter (a-z).');
+  }
+
+  // At least one special character
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return setError('Password must contain at least one special character (@, #, !, etc.).');
+  }
+
+  // Password confirmation
+  if (password !== form.confirm) {
+    return setError('Those passwords do not match.');
+  }
+
+  setLoading(true);
+
+  try {
+    await register(form.email, password, form.full_name);
+    navigate('/login?registered=1');
+  } catch (err) {
+    const detail = err?.response?.data?.detail;
+    setError(
+      typeof detail === 'string'
+        ? detail
+        : 'Registration failed. Try a different email.'
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <AuthShell title="Create an account" subtitle="Students can join clubs after they register.">
