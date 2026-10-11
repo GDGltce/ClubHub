@@ -47,7 +47,7 @@ def create_department(
     college_id: str, body: DepartmentCreate,
     db: Session = Depends(get_db), _: User = Depends(require_admin)
 ):
-    dept = Department(**body.model_dump(), college_id=college_id)
+    dept = Department(**{**body.model_dump(), "college_id": college_id})
     db.add(dept)
     db.commit()
     db.refresh(dept)
