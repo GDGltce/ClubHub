@@ -101,4 +101,11 @@ export const notificationApi = {
   markRead: (id) => api.patch(`/notifications/${id}/read`),
 };
 
+// ── Users (Admin) ──────────────────────────────────────────────
+export const userApi = {
+  list:   (params) => api.get('/users', { params }),
+  get:    (id)     => api.get(`/users/${id}`),
+  update: (id, data) => api.patch(`/users/${id}`, data),
+};
+
 export default api;
