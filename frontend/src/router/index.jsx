@@ -12,6 +12,7 @@ import EventListPage from '../pages/events/EventListPage';
 import EventDetailPage from '../pages/events/EventDetailPage';
 import EventCreatePage from '../pages/events/EventCreatePage';
 import ClubCreatePage from '../pages/clubs/ClubCreatePage';
+import UserManagementPage from '../pages/admin/UserManagementPage';
 
 // Simple Auth Guard
 function Placeholder({ kicker, title, text }) {
@@ -32,6 +33,12 @@ const RequireAuth = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <AppLayout><div className="page-loader"><div className="spinner"/></div></AppLayout>;
   if (!user) return <Navigate to="/login" replace />;
+  return children;
+};
+
+const RequireAdmin = ({ children }) => {
+  const { user } = useAuth();
+  if (user?.global_role !== 'platform_admin') return <Navigate to="/dashboard" replace />;
   return children;
 };
 
@@ -93,7 +100,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/admin/users',
-    element: <Placeholder kicker="Admin" title="Users" text="Account review for the campus will be added here." />,
+    element: <RequireAuth><RequireAdmin><UserManagementPage /></RequireAdmin></RequireAuth>,
   },
   {
     path: '*',
