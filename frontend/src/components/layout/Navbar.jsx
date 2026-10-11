@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Mark } from '../common/Icon';
 import Icon from '../common/Icon';
 
-export default function Navbar({ onMenu }) {
+export default function Navbar({ onMenu, menuOpen }) {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -17,9 +17,16 @@ export default function Navbar({ onMenu }) {
   return (
     <nav className="navbar">
       <div className="flex items-center gap-2">
-        <button className="navbar__menu" type="button" aria-label="Open menu" onClick={onMenu}>
-          <Icon name="menu" />
-        </button>
+      <button
+        className="navbar__menu"
+        type="button"
+        aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        aria-controls="sidebar-navigation"
+        aria-expanded={menuOpen}
+        onClick={onMenu}
+      >
+        <Icon name="menu" />
+      </button>
         <Link to="/dashboard" className="navbar__brand">
           <Mark size={26} />
           <span>

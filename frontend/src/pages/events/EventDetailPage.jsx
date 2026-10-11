@@ -61,13 +61,41 @@ export default function EventDetailPage() {
   return (
     <AppLayout>
       <div className="card" style={{ marginBottom: '1.1rem', padding: '0.8rem 0.9rem 0.4rem' }}>
-        <div className="stepper">
-          {STAGES.map((stage, index) => (
-            <div key={stage} className={`step ${index < currentIdx ? 'step--done' : index === currentIdx ? 'step--active' : ''}`}>
-              {STAGE_LABELS[stage]}
-            </div>
-          ))}
-        </div>
+        <div
+  className="stepper"
+  role="list"
+  aria-label="Event progress"
+>
+  {STAGES.map((stage, index) => {
+    const isDone = index < currentIdx;
+    const isCurrent = index === currentIdx;
+
+    return (
+      <div
+        key={stage}
+        className={`step ${
+          isDone
+            ? 'step--done'
+            : isCurrent
+              ? 'step--active'
+              : ''
+        }`}
+        role="listitem"
+        aria-current={isCurrent ? 'step' : undefined}
+      >
+        <span>{STAGE_LABELS[stage]}</span>
+
+        <span className="sr-only">
+          {isCurrent
+            ? 'Current stage'
+            : isDone
+              ? 'Completed'
+              : 'Not started'}
+        </span>
+      </div>
+    );
+  })}
+</div>
       </div>
 
       <div className="grid-2">

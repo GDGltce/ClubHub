@@ -5,16 +5,36 @@ import Sidebar from './Sidebar';
 export default function AppLayout({ children, hideSidebar = false }) {
   const [open, setOpen] = useState(false);
 
+  const closeMenu = () => setOpen(false);
+
   return (
     <div className={`app-layout${hideSidebar ? ' app-layout--no-sidebar' : ''}`}>
-      <Navbar onMenu={() => setOpen(true)} />
+      <Navbar
+        menuOpen={open}
+        onMenu={() => setOpen((current) => !current)}
+      />
+
       {!hideSidebar && (
         <>
-          {open && <button className="sidebar-backdrop" aria-label="Close menu" onClick={() => setOpen(false)} />}
-          <Sidebar open={open} onNavigate={() => setOpen(false)} />
+          {open && (
+            <button
+              className="sidebar-backdrop"
+              type="button"
+              aria-label="Close navigation menu"
+              onClick={closeMenu}
+            />
+          )}
+
+          <Sidebar
+            open={open}
+            onNavigate={closeMenu}
+          />
         </>
       )}
-      <main className="main-content">{children}</main>
+
+      <main className="main-content">
+        {children}
+      </main>
     </div>
   );
 }
