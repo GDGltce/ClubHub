@@ -54,6 +54,7 @@ export const institutionApi = {
   getCollege:       (id)         => api.get(`/institutions/colleges/${id}`),
   createCollege:    (data)       => api.post('/institutions/colleges', data),
   listDepartments:  (collegeId)  => api.get(`/institutions/colleges/${collegeId}/departments`),
+  createDepartment: (collegeId, data) => api.post(`/institutions/colleges/${collegeId}/departments`, { ...data, college_id: collegeId }),
 };
 
 // ── Clubs ──────────────────────────────────────────────────────
