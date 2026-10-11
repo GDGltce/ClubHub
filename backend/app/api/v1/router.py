@@ -1,9 +1,14 @@
-"""
-V1 API router – aggregates all endpoint routers
-"""
 from fastapi import APIRouter
 from app.api.v1.endpoints import (
-    auth, institutions, clubs, memberships, events, documents, meetings, notifications
+    auth,
+    institutions,
+    clubs,
+    memberships,
+    events,
+    documents,
+    meetings,
+    notifications,
+    media,
 )
 
 api_router = APIRouter()
@@ -16,3 +21,4 @@ api_router.include_router(events.router)
 api_router.include_router(documents.router)
 api_router.include_router(meetings.router)
 api_router.include_router(notifications.router)
+api_router.include_router(media.router)
