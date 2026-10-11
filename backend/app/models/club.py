@@ -28,6 +28,7 @@ class ClubType(str, enum.Enum):
 class ClubStatus(str, enum.Enum):
     PENDING = "pending"
     ACTIVE = "active"
+    NEEDS_CHANGES = "needs_changes"
     INACTIVE = "inactive"
     SUSPENDED = "suspended"
 

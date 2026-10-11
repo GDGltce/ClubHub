@@ -12,6 +12,7 @@ import EventListPage from '../pages/events/EventListPage';
 import EventDetailPage from '../pages/events/EventDetailPage';
 import EventCreatePage from '../pages/events/EventCreatePage';
 import ClubCreatePage from '../pages/clubs/ClubCreatePage';
+import ClubReviewPage from '../pages/admin/ClubReviewPage';
 
 // Simple Auth Guard
 function Placeholder({ kicker, title, text }) {
@@ -32,6 +33,12 @@ const RequireAuth = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <AppLayout><div className="page-loader"><div className="spinner"/></div></AppLayout>;
   if (!user) return <Navigate to="/login" replace />;
+  return children;
+};
+
+const RequireAdmin = ({ children }) => {
+  const { user } = useAuth();
+  if (user?.global_role !== 'platform_admin') return <Navigate to="/dashboard" replace />;
   return children;
 };
 
@@ -90,6 +97,10 @@ const router = createBrowserRouter([
   {
     path: '/admin/institutions',
     element: <Placeholder kicker="Admin" title="Institutions" text="College and department registration is not in the interface yet." />,
+  },
+  {
+    path: '/admin/clubs',
+    element: <RequireAuth><RequireAdmin><ClubReviewPage /></RequireAdmin></RequireAuth>,
   },
   {
     path: '/admin/users',

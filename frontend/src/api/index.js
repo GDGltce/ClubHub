@@ -59,10 +59,12 @@ export const institutionApi = {
 // ── Clubs ──────────────────────────────────────────────────────
 export const clubApi = {
   list:    (params) => api.get('/clubs', { params }),
+  pending: ()       => api.get('/clubs/pending'),
   get:     (id)     => api.get(`/clubs/${id}`),
   create:  (data)   => api.post('/clubs', data),
   update:  (id, data) => api.patch(`/clubs/${id}`, data),
   approve: (id)     => api.patch(`/clubs/${id}/approve`),
+  sendBack: (id)    => api.patch(`/clubs/${id}/send-back`),
 };
 
 // ── Memberships ────────────────────────────────────────────────

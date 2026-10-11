@@ -30,3 +30,7 @@ app.include_router(api_router, prefix="/api/v1")
 @app.get("/", tags=["Health"])
 def health():
     return {"status": "ok", "app": settings.APP_NAME, "version": settings.APP_VERSION}
+
+# Mount uploads directory for serving club photos
+from fastapi.staticfiles import StaticFiles
+app.mount("/uploads", StaticFiles(directory="backend/app/static/uploads"), name="uploads")
