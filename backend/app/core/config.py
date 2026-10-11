@@ -11,6 +11,16 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
 
+    @field_validator("DEBUG", mode="before")
+    @classmethod
+    def parse_debug(cls, v):
+        if isinstance(v, str):
+            if v.lower() in ("true", "1", "yes", "on"):
+                return True
+            if v.lower() in ("false", "0", "no", "off", "release"):
+                return False
+        return v
+
     # Database
     DATABASE_URL: str = "sqlite:///./clubhub.db"
 
