@@ -503,3 +503,33 @@ textarea.form-control { resize: vertical; }
   .page-title { font-size: 1.8rem; }
   .fact-grid { grid-template-columns: 1fr; }
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.club-card-link {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.club-card-link:focus-visible {
+  outline: 3px solid var(--brick);
+  outline-offset: 4px;
+}
+
+.club-card-link:focus-visible .club-card {
+  border-color: var(--brick);
+}
+
+.club-card-link:focus:not(:focus-visible) {
+  outline: none;
+}

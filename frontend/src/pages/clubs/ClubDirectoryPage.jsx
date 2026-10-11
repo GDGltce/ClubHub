@@ -89,7 +89,12 @@ export default function ClubDirectoryPage() {
       ) : (
         <div className="grid-3">
           {filtered.map((club) => (
-            <Link key={club.id} to={`/clubs/${club.id}`}>
+  <Link
+    key={club.id}
+    to={`/clubs/${club.id}`}
+    aria-label={`View ${club.name} club details`}
+    className="club-card-link"
+  >
               <article className="card card--clickable club-card">
                 <div className="club-card__cover" style={{ background: washFor(club.name) }}>
                   {initials(club.name)}

@@ -29,17 +29,23 @@ export default function Sidebar({ open, onNavigate }) {
   const active = (path) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
 
   return (
-    <aside className={`sidebar${open ? ' sidebar--open' : ''}`}>
+    <aside
+  id="sidebar-navigation"
+  className={`sidebar${open ? ' sidebar--open' : ''}`}
+  aria-label="Main navigation"
+  aria-hidden={undefined}
+>
       {Object.entries(sections).map(([section, items]) => (
         <div key={section}>
           <div className="sidebar__section-label">{section}</div>
           {items.map((item) => (
             <Link
-              key={item.path}
-              to={item.path}
-              onClick={onNavigate}
-              className={`sidebar__item${active(item.path) ? ' sidebar__item--active' : ''}`}
-            >
+  key={item.path}
+  to={item.path}
+  onClick={onNavigate}
+  aria-current={active(item.path) ? 'page' : undefined}
+  className={`sidebar__item${active(item.path) ? ' sidebar__item--active' : ''}`}
+>
               <Icon name={item.icon} size={16} />
               {item.label}
             </Link>
