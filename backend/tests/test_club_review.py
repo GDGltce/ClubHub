@@ -141,6 +141,29 @@ class ClubReviewTests(unittest.TestCase):
         response = self.client.patch(f"/api/v1/clubs/{self.active_id}/send-back")
         self.assertEqual(response.status_code, 409)
 
+    def test_sent_back_club_returns_to_queue_when_updated(self):
+        with self.session_factory() as db:
+            club = Club(
+                college_id=self.college_id,
+                name="Needs Changes Club",
+                club_type=ClubType.DEPARTMENTAL,
+                status=ClubStatus.NEEDS_CHANGES,
+            )
+            db.add(club)
+            db.commit()
+            club_id = club.id
+
+        response = self.client.patch(
+            f"/api/v1/clubs/{club_id}",
+            json={"tagline": "Updated for review"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], ClubStatus.PENDING.value)
+
+        pending_names = [club["name"] for club in self.client.get("/api/v1/clubs/pending").json()]
+        self.assertIn("Needs Changes Club", pending_names)
+
 
 if __name__ == "__main__":
     unittest.main()

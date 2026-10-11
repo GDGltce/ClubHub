@@ -56,8 +56,11 @@ def update_club(club_id: str, body: ClubUpdate, db: Session = Depends(get_db), c
     club = db.query(Club).filter(Club.id == club_id).first()
     if not club:
         raise HTTPException(404, "Club not found")
-    for k, v in body.model_dump(exclude_unset=True).items():
+    changes = body.model_dump(exclude_unset=True)
+    for k, v in changes.items():
         setattr(club, k, v)
+    if changes and club.status == ClubStatus.NEEDS_CHANGES:
+        club.status = ClubStatus.PENDING
     db.commit()
     db.refresh(club)
     return club
