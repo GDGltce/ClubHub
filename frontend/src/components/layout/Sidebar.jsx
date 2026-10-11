@@ -11,6 +11,7 @@ const NAV_ITEMS = [
 ];
 
 const ADMIN_ITEMS = [
+  { label: 'Club proposals', icon: 'clubs', path: '/admin/clubs', section: 'Admin' },
   { label: 'Institutions', icon: 'building', path: '/admin/institutions', section: 'Admin' },
   { label: 'Users', icon: 'users', path: '/admin/users', section: 'Admin' },
 ];

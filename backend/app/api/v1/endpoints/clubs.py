@@ -1,7 +1,7 @@
 """
 Club endpoints
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.db.session import get_db
@@ -33,6 +33,16 @@ def create_club(body: ClubCreate, db: Session = Depends(get_db), current_user: U
     return club
 
 
+@router.get("/pending", response_model=List[ClubOut])
+def list_pending_clubs(db: Session = Depends(get_db), _: User = Depends(require_admin)):
+    return (
+        db.query(Club)
+        .filter(Club.status == ClubStatus.PENDING)
+        .order_by(Club.created_at.asc())
+        .all()
+    )
+
+
 @router.get("/{club_id}", response_model=ClubOut)
 def get_club(club_id: str, db: Session = Depends(get_db)):
     club = db.query(Club).filter(Club.id == club_id).first()
@@ -46,8 +56,11 @@ def update_club(club_id: str, body: ClubUpdate, db: Session = Depends(get_db), c
     club = db.query(Club).filter(Club.id == club_id).first()
     if not club:
         raise HTTPException(404, "Club not found")
-    for k, v in body.model_dump(exclude_unset=True).items():
+    changes = body.model_dump(exclude_unset=True)
+    for k, v in changes.items():
         setattr(club, k, v)
+    if changes and club.status == ClubStatus.NEEDS_CHANGES:
+        club.status = ClubStatus.PENDING
     db.commit()
     db.refresh(club)
     return club
@@ -58,7 +71,22 @@ def approve_club(club_id: str, db: Session = Depends(get_db), _: User = Depends(
     club = db.query(Club).filter(Club.id == club_id).first()
     if not club:
         raise HTTPException(404, "Club not found")
+    if club.status != ClubStatus.PENDING:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Only pending clubs can be reviewed")
     club.status = ClubStatus.ACTIVE
+    db.commit()
+    db.refresh(club)
+    return club
+
+
+@router.patch("/{club_id}/send-back", response_model=ClubOut)
+def send_back_club(club_id: str, db: Session = Depends(get_db), _: User = Depends(require_admin)):
+    club = db.query(Club).filter(Club.id == club_id).first()
+    if not club:
+        raise HTTPException(404, "Club not found")
+    if club.status != ClubStatus.PENDING:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Only pending clubs can be reviewed")
+    club.status = ClubStatus.NEEDS_CHANGES
     db.commit()
     db.refresh(club)
     return club

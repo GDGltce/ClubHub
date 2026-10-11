@@ -56,6 +56,11 @@ export default function ClubDetailPage() {
           This proposal is waiting for an administrator to approve it. It will not appear in the directory until then.
         </p>
       )}
+      {club.status === 'needs_changes' && (
+        <p className="text-sm" style={{ marginBottom: '1rem' }}>
+          An administrator sent this proposal back for changes. It will not appear in the directory until it is approved.
+        </p>
+      )}
 
       <div className="grid-2">
         <div className="stack">
