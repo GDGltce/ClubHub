@@ -5,6 +5,7 @@ import Icon from '../../components/common/Icon';
 import { Empty, initials, washFor } from '../../components/common/Marks';
 import { clubApi, membershipApi, eventApi } from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
+import JoinRequestsList from './JoinRequestsList';
 
 const STAGES = ['idea', 'permission', 'funds', 'planning', 'promotion', 'pre_event', 'execution', 'post_event', 'archived'];
 
@@ -39,6 +40,9 @@ export default function ClubDetailPage() {
 
   if (!club) return <AppLayout><div className="page-loader"><div className="spinner" /></div></AppLayout>;
 
+  const isClubLead = user && club && user.id === club.lead_id;
+  // console.log("Full Club Data:", club);
+
   return (
     <AppLayout>
       <div className="club-hero" style={{ background: washFor(club.name) }}>
@@ -63,14 +67,11 @@ export default function ClubDetailPage() {
             <h2 className="card__title">About</h2>
             <p className="text-sm text-muted mt-1">{club.description || 'No description yet.'}</p>
             {club.tagline && <p className="text-sm mt-1" style={{ fontFamily: 'var(--font-display)' }}>{club.tagline}</p>}
-            {club.instagram_handle && (
-              <a href={`https://instagram.com/${club.instagram_handle.replace('@', '')}`} target="_blank" rel="noreferrer" className="btn btn--secondary btn--sm" style={{ marginTop: '1rem' }}>
-                <Icon name="instagram" size={15} /> {club.instagram_handle}
-              </a>
-            )}
           </section>
 
-          {user && user.global_role === 'student' && club.status === 'active' && (
+          {isClubLead && <JoinRequestsList clubId={club.id} />}
+
+          {user && user.global_role === 'student' && club.status === 'active' && !isClubLead && (
             <section className="card">
               <h2 className="card__title">Request to join</h2>
               <div className="form-group" style={{ marginTop: '0.75rem' }}>
@@ -84,13 +85,6 @@ export default function ClubDetailPage() {
                   {joining ? <span className="spinner" /> : 'Send request'}
                 </button>
               )}
-            </section>
-          )}
-          {!user && (
-            <section className="card">
-              <h2 className="card__title">Join this club</h2>
-              <p className="text-sm text-muted mt-1">Sign in with a student account to send a request.</p>
-              <Link to="/login" className="btn btn--primary" style={{ marginTop: '0.8rem' }}>Sign in</Link>
             </section>
           )}
         </div>
